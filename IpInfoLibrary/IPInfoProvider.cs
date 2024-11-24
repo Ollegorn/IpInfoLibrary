@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace IPInfoLibrary
 {
@@ -27,31 +25,23 @@ namespace IPInfoLibrary
                 var response = await client.GetStringAsync(url);
                 var ipDetails = JsonSerializer.Deserialize<JsonElement>(response);
 
-                if (ipDetails.TryGetProperty("success", out var success) && success.GetBoolean() == false)
+                if (ipDetails.TryGetProperty("success", out var success))
                 {
-                    var errorInfo = ipDetails.GetProperty("error");
-                    var errordetails = new IPDetails
-                    {
-                        Error = errorInfo.ToString(),
-                    };
-                    return errordetails;
+                    throw new IPServiceNotAvailableException($"API Error");
                 }
 
-                var details = new IPDetails
+                return new IPDetailsDto
                 {
                     City = ipDetails.GetProperty("city").GetString(),
                     Country = ipDetails.GetProperty("country_name").GetString(),
                     Continent = ipDetails.GetProperty("continent_name").GetString(),
                     Latitude = ipDetails.GetProperty("latitude").GetDouble().ToString(),
-                    Longitude = ipDetails.GetProperty("longitude").GetDouble().ToString(),
-                    Error = "none"
+                    Longitude = ipDetails.GetProperty("longitude").GetDouble().ToString()
                 };
-
-                return details;
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
-                throw new IPServiceNotAvailableException("error occurred", ex);
+                throw new IPServiceNotAvailableException("API request failed.", ex);
             }
         }
     }
