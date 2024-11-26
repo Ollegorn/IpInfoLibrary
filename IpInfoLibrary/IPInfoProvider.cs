@@ -35,8 +35,8 @@ namespace IPInfoLibrary
                     City = ipDetails.GetProperty("city").GetString(),
                     Country = ipDetails.GetProperty("country_name").GetString(),
                     Continent = ipDetails.GetProperty("continent_name").GetString(),
-                    Latitude = ipDetails.GetProperty("latitude").GetDouble().ToString(),
-                    Longitude = ipDetails.GetProperty("longitude").GetDouble().ToString()
+                    Latitude = ipDetails.GetProperty("latitude").GetDouble(),
+                    Longitude = ipDetails.GetProperty("longitude").GetDouble()
                 };
             }
             catch (HttpRequestException ex)
